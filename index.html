@@ -170,6 +170,8 @@
   .proj h3{font-size:clamp(28px,3.4vw,48px);font-weight:500;letter-spacing:-.035em;line-height:1}
   .proj .type{display:inline-block;font:10px var(--mono);letter-spacing:.12em;text-transform:uppercase;padding:5px 9px;border-radius:6px;border:1px solid currentColor;margin-top:12px;color:var(--accent)}
   .proj .type.saas{color:var(--accent3)}
+  .proj .status{display:inline-flex;align-items:center;gap:6px;font:10px var(--mono);letter-spacing:.12em;text-transform:uppercase;padding:5px 9px;border-radius:6px;border:1px solid #ffd166;color:#ffd166;margin:12px 0 0 8px}
+  .proj .status::before{content:'';width:6px;height:6px;border-radius:50%;background:#ffd166;box-shadow:0 0 8px #ffd166;animation:pulse 1.6s infinite}
   .proj p{color:var(--muted);line-height:1.6;font-size:15px}
   .proj .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
   .proj .tags span{font:11px var(--mono);color:var(--fg);opacity:.7;padding:4px 8px;border-radius:6px;background:rgba(255,255,255,.05)}
@@ -494,15 +496,20 @@ const CONFIG = {
        desc:'Ce que fait le projet en une phrase.', tags:['Next.js','Stripe'],
        bg:'linear-gradient(135deg,#6a2cff,#ff4fd8 60%,#ffb36b)' },
      (type : 'saas' ou 'projet') */
-  projects: [],
-  emptySlots: 3,   // nombre d'emplacements "en construction" affichés tant qu'il n'y a pas de projets
+  projects: [
+    { name:'Feedo', type:'saas', status:'En construction', year:'2026',
+      url:'https://codefast-saas-woad-ten.vercel.app/', host:'feedo · landing page',
+      desc:'SaaS pour collecter les retours de tes clients : un tableau de feedback créé en quelques minutes pour prioriser les fonctionnalités qu\'ils veulent vraiment. Landing page en ligne, produit en cours de développement.',
+      tags:['Next.js','Tailwind','DaisyUI'], bg:'linear-gradient(135deg,#ff7a59,#ff4fd8 55%,#6a2cff)' },
+  ],
+  emptySlots: 3,   // nombre total de lignes affichées : les cases vides restantes s'affichent en "À venir"
   stack: [
     ['Frontend','React',95],['Framework','Next.js',92],['3D','Three.js',85],['Langage','TypeScript',90],
     ['Style','Tailwind',95],['Backend','Node.js',88],['BDD','PostgreSQL',82],['BaaS','Supabase',90],
     ['Paiement','Stripe',85],['IA','LLM / RAG',86],['Shaders','GLSL',70],['Deploy','Vercel',92],
   ],
   timeline: [
-    { when:'Prochaine étape', title:'Premier SaaS', at:'· En préparation', text:'Construire et lancer mon premier produit, puis le documenter ici étape par étape.' },
+    { when:'En cours', title:'Feedo', at:'· Premier SaaS', text:'Un outil pour collecter et prioriser les retours clients. La landing page est en ligne, le produit est en cours de développement.' },
     { when:'2026', title:'Lancement de ce portfolio', at:'· Point de départ', text:'Le jour 1. Ce site est mon premier projet : codé à la main avec Three.js et des shaders GLSL.' },
   ],
 };
@@ -534,11 +541,21 @@ $('#projList').innerHTML = !hasProjects
   : CONFIG.projects.map((p,i) => `
   <a class="proj reveal" href="${p.url}" target="_blank" rel="noopener" data-type="${p.type}" data-i="${i}" data-hover data-label="VOIR">
     <span class="idx">(${String(i+1).padStart(2,'0')})</span>
-    <div><h3>${p.name}</h3><span class="type ${p.type}">${p.type === 'saas' ? 'SaaS' : 'Projet'}</span></div>
+    <div><h3>${p.name}</h3><span class="type ${p.type}">${p.type === 'saas' ? 'SaaS' : 'Projet'}</span>${p.status ? `<span class="status">${p.status}</span>` : ''}</div>
     <div><p>${p.desc}</p><div class="tags">${p.tags.map(t=>`<span>${t}</span>`).join('')}</div></div>
     <span class="year">${p.year}</span>
     <span class="go">→</span>
-  </a>`).join('');
+  </a>`).join('') +
+    Array.from({ length: Math.max(0, CONFIG.emptySlots - CONFIG.projects.length) }, (_, k) => {
+      const n = CONFIG.projects.length + k + 1;
+      return `
+    <div class="proj slot reveal" data-slot="${n}" data-hover data-label="BIENTÔT">
+      <span class="idx">(${String(n).padStart(2,'0')})</span>
+      <div><h3 class="slot-name">Projet #${String(n).padStart(2,'0')}</h3><span class="type">À venir</span></div>
+      <div><p class="slot-desc">Emplacement réservé pour un futur projet ou SaaS.</p><div class="loadbar"><i style="--p:0%"></i></div></div>
+      <span class="year">—</span>
+      <span class="go">○</span>
+    </div>`; }).join('');
 
 $('#stackGrid').innerHTML = CONFIG.stack.map(([c,n,v]) => `
   <div class="tech" data-hover><small>${c}</small><b>${n}</b><div class="lvl"><i style="--v:${v}%"></i></div></div>`).join('');
