@@ -203,6 +203,10 @@
   .preview .bar small{margin-left:10px;font:10px var(--mono);color:var(--muted)}
   .preview .body{position:absolute;inset:28px 0 0 0;background:var(--pg);display:grid;place-items:center}
   .preview .body::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);background-size:24px 24px}
+  .preview.has-img{width:500px;height:300px}
+  .preview .shot{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top left;display:none}
+  .preview.has-img .shot{display:block}
+  .preview.has-img .mock,.preview.has-img .body::before{display:none}
   .preview .mock{position:relative;width:80%;display:grid;gap:8px}
   .preview .mock b{display:block;font-size:26px;font-weight:600;letter-spacing:-.03em}
   .preview .mock i{display:block;height:8px;border-radius:4px;background:rgba(255,255,255,.25)}
@@ -306,7 +310,7 @@
 <div class="grain"></div>
 
 <div class="cursor" id="cursor"><div class="cursor-ring"></div><div class="cursor-dot"></div><div class="cursor-label">VOIR</div></div>
-<div class="preview" id="preview"><div class="bar"><i></i><i></i><i></i><small id="pv-url">app.exemple.com</small></div><div class="body"><div class="mock"><b id="pv-title">Projet</b><i></i><i></i><i></i><div class="row"><span></span><span></span><span></span></div></div></div></div>
+<div class="preview" id="preview"><div class="bar"><i></i><i></i><i></i><small id="pv-url">app.exemple.com</small></div><div class="body"><img class="shot" id="pv-img" alt=""><div class="mock"><b id="pv-title">Projet</b><i></i><i></i><i></i><div class="row"><span></span><span></span><span></span></div></div></div></div>
 <div class="toast" id="toast">Email copié ✓</div>
 
 <nav>
@@ -498,9 +502,13 @@ const CONFIG = {
      (type : 'saas' ou 'projet') */
   projects: [
     { name:'Feedo', type:'saas', status:'En construction', year:'2026',
-      url:'https://usefeedo.com', host:'usefeedo.com',
+      url:'https://usefeedo.com', host:'usefeedo.com', img:'/pub/shots/feedo.jpg',
       desc:'SaaS pour collecter les retours de tes clients : un tableau de feedback créé en quelques minutes pour prioriser les fonctionnalités qu\'ils veulent vraiment. Landing page en ligne, produit en cours de développement.',
       tags:['Next.js','Tailwind','DaisyUI'], bg:'linear-gradient(135deg,#ff7a59,#ff4fd8 55%,#6a2cff)' },
+    { name:'Prospection', type:'projet', status:'Outil interne', year:'2026',
+      host:'localhost · outil privé', img:'/pub/shots/prospection.jpg',
+      desc:'Mon outil de cold emailing, inspiré d\'Instantly : il trouve des commerces locaux sur Google Maps, récupère leur email sur leur site, repère les faiblesses de leur fiche Google et envoie des séquences de mails personnalisées avec relances, tests A/B, montée en charge progressive et détection des réponses.',
+      tags:['Node.js','SMTP / IMAP','Google Places API','Scraping'], bg:'linear-gradient(135deg,#2563eb,#6ff7ff 60%,#b7ffcf)' },
   ],
   emptySlots: 3,   // nombre total de lignes affichées : les cases vides restantes s'affichent en "À venir"
   stack: [
@@ -510,6 +518,7 @@ const CONFIG = {
   ],
   timeline: [
     { when:'En cours', title:'Feedo', at:'· Premier SaaS', text:'Un outil pour collecter et prioriser les retours clients. La landing page est en ligne, le produit est en cours de développement.' },
+    { when:'2026', title:'Outil de prospection', at:'· Outil interne', text:'Mon propre outil de cold emailing, codé de zéro : recherche de prospects sur Google Maps, récupération des emails et séquences de relances automatiques.' },
     { when:'2026', title:'Lancement de ce portfolio', at:'· Point de départ', text:'Le jour 1. Ce site est mon premier projet : codé à la main avec Three.js et des shaders GLSL.' },
   ],
 };
@@ -539,13 +548,13 @@ $('#projList').innerHTML = !hasProjects
       <span class="go">${i === 0 ? '◔' : '○'}</span>
     </div>`).join('')
   : CONFIG.projects.map((p,i) => `
-  <a class="proj reveal" href="${p.url}" target="_blank" rel="noopener" data-type="${p.type}" data-i="${i}" data-hover data-label="VOIR">
+  <${p.url ? 'a' : 'div'} class="proj reveal" ${p.url ? `href="${p.url}" target="_blank" rel="noopener"` : ''} data-type="${p.type}" data-i="${i}" data-hover data-label="${p.url ? 'VOIR' : 'PRIVÉ'}">
     <span class="idx">(${String(i+1).padStart(2,'0')})</span>
     <div><h3>${p.name}</h3><span class="type ${p.type}">${p.type === 'saas' ? 'SaaS' : 'Projet'}</span>${p.status ? `<span class="status">${p.status}</span>` : ''}</div>
     <div><p>${p.desc}</p><div class="tags">${p.tags.map(t=>`<span>${t}</span>`).join('')}</div></div>
     <span class="year">${p.year}</span>
-    <span class="go">→</span>
-  </a>`).join('') +
+    <span class="go">${p.url ? '→' : '●'}</span>
+  </${p.url ? 'a' : 'div'}>`).join('') +
     Array.from({ length: Math.max(0, CONFIG.emptySlots - CONFIG.projects.length) }, (_, k) => {
       const n = CONFIG.projects.length + k + 1;
       return `
@@ -703,6 +712,7 @@ $$('.tilt').forEach(el => {
 });
 
 /* project hover preview */
+CONFIG.projects.forEach(p => { if (p.img) new Image().src = p.img; });
 const preview = $('#preview');
 const pv = { x: innerWidth/2, y: innerHeight/2 };
 $$('.proj').forEach(el => {
@@ -714,6 +724,8 @@ $$('.proj').forEach(el => {
     preview.style.setProperty('--pg', p.bg);
     $('#pv-title').textContent = p.name;
     $('#pv-url').textContent = p.host;
+    if (p.img) $('#pv-img').src = p.img;
+    preview.classList.toggle('has-img', !!p.img);
     preview.classList.add('show');
     burst = 1;
   });
