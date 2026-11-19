@@ -121,7 +121,7 @@
 
   /* ---------- Buttons ---------- */
   .btn{position:relative;display:inline-flex;align-items:center;gap:10px;padding:16px 26px;border-radius:999px;border:1px solid var(--line);
-    font:500 13px var(--mono);letter-spacing:.06em;text-transform:uppercase;overflow:hidden;background:rgba(10,12,20,.4);backdrop-filter:blur(10px);color:var(--fg);
+    font:500 13px var(--mono);letter-spacing:.06em;text-transform:uppercase;overflow:hidden;background:rgba(10,12,20,.62);color:var(--fg);
     transition:border-color .4s, color .4s}
   .btn::before{content:'';position:absolute;inset:0;background:var(--accent);transform:translateY(101%);border-radius:inherit;transition:transform .5s var(--ease)}
   .btn:hover{color:var(--bg);border-color:var(--accent)}
@@ -132,7 +132,7 @@
   .btn:hover .arr{transform:translateX(4px) rotate(-45deg)}
 
   /* ---------- Marquee ---------- */
-  .marquee{position:relative;z-index:10;border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;padding:26px 0;background:rgba(5,6,10,.55);backdrop-filter:blur(6px)}
+  .marquee{position:relative;z-index:10;border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;padding:26px 0;background:rgba(5,6,10,.8)}
   .marquee-track{display:flex;width:max-content;animation:mq 40s linear infinite}
   .marquee:hover .marquee-track{animation-play-state:paused}
   .marquee span{font-size:clamp(28px,4vw,52px);font-weight:500;letter-spacing:-.03em;padding:0 28px;display:flex;align-items:center;gap:56px;white-space:nowrap}
@@ -217,7 +217,7 @@
 
   /* ---------- Services ---------- */
   .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:64px;perspective:1200px}
-  .card{position:relative;padding:36px;border-radius:22px;border:1px solid var(--line);background:rgba(10,12,20,.6);backdrop-filter:blur(14px);
+  .card{position:relative;padding:36px;border-radius:22px;border:1px solid var(--line);background:rgba(10,12,20,.84);
     min-height:360px;display:flex;flex-direction:column;justify-content:space-between;transform-style:preserve-3d;transition:transform .2s ease-out, border-color .4s;overflow:hidden}
   .card::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
     background:radial-gradient(400px circle at var(--mx,50%) var(--my,50%),rgba(111,247,255,.14),transparent 45%);opacity:0;transition:opacity .4s}
@@ -265,7 +265,7 @@
   .socials{display:flex;flex-direction:column;border-top:1px solid var(--line);margin-top:36px}
   .socials a{display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid var(--line);font:14px var(--mono);text-transform:uppercase;letter-spacing:.08em;transition:padding .4s var(--ease),color .3s}
   .socials a:hover{padding-left:14px;color:var(--accent)}
-  form{display:grid;gap:14px;padding:36px;border-radius:24px;border:1px solid var(--line);background:rgba(10,12,20,.6);backdrop-filter:blur(16px)}
+  form{display:grid;gap:14px;padding:36px;border-radius:24px;border:1px solid var(--line);background:rgba(10,12,20,.86)}
   .field{position:relative}
   .field input,.field textarea{width:100%;background:transparent;border:none;border-bottom:1px solid var(--line);padding:26px 0 12px;color:var(--fg);font:18px var(--sans);outline:none;transition:border-color .3s;resize:none}
   .field label{position:absolute;left:0;top:26px;font:12px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.1em;transition:all .3s var(--ease);pointer-events:none}
@@ -808,8 +808,8 @@ let intro = 1;     // 1 → 0 after loader (scene zooms in)
 let burst = 0;     // spikes on interactions
 
 const canvas = $('#gl');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
 renderer.setSize(innerWidth, innerHeight);
 renderer.setClearColor(0x05060a, 1);
 
@@ -863,7 +863,7 @@ const blobUniforms = {
 };
 
 const blob = new THREE.Mesh(
-  new THREE.IcosahedronGeometry(1.5, isTouch ? 40 : 64),
+  new THREE.IcosahedronGeometry(1.5, isTouch ? 24 : 36),
   new THREE.ShaderMaterial({
     uniforms: blobUniforms,
     vertexShader: NOISE + DISPLACE + /* glsl */`
@@ -907,7 +907,7 @@ blobGroup.add(blob);
 
 /* surface points shell */
 const shell = new THREE.Points(
-  new THREE.IcosahedronGeometry(1.5, isTouch ? 18 : 28),
+  new THREE.IcosahedronGeometry(1.5, isTouch ? 14 : 20),
   new THREE.ShaderMaterial({
     uniforms: blobUniforms, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
     vertexShader: NOISE + DISPLACE + /* glsl */`
@@ -1044,7 +1044,7 @@ const tmpV = new THREE.Vector3();
 
 /* loop */
 const clock = new THREE.Clock();
-let scrollP = 0, scrollS = 0, agit = 0, frames = 0, fpsT = 0;
+let scrollP = 0, scrollS = 0, agit = 0, frames = 0, fpsT = 0, lastSp = -1, lastOn = -1;
 const sm = { x:0, y:0 };
 
 function tick(){
@@ -1073,13 +1073,14 @@ function tick(){
   scrollP = max > 0 ? scrollY / max : 0;
   scrollS = lerp(scrollS, scrollY / innerHeight, .08);
   $('#spbar').style.transform = `scaleY(${scrollP})`;
-  $('#sp').textContent = String(Math.round(scrollP*100)).padStart(3,'0');
+  const spv = Math.round(scrollP*100);
+  if (spv !== lastSp){ lastSp = spv; $('#sp').textContent = String(spv).padStart(3,'0'); }
 
   /* about words highlight */
   const ar = about.getBoundingClientRect();
   const ap = Math.min(Math.max((innerHeight*.8 - ar.top) / (ar.height + innerHeight*.3), 0), 1);
   const on = Math.floor(ap * aboutWords.length);
-  aboutWords.forEach((w,i) => w.classList.toggle('on', i < on));
+  if (on !== lastOn){ lastOn = on; aboutWords.forEach((w,i) => w.classList.toggle('on', i < on)); }
 
   /* intro zoom */
   /* camera */
