@@ -513,6 +513,10 @@ const CONFIG = {
       url:'https://the-other-angle.vercel.app', host:'the-other-angle.vercel.app', img:'/shots/the-other-angle.jpg',
       desc:'Mon projet perso autour du dessin : pour chaque cours de l\'ARTSchool de Marc Brunet, des vidéos gratuites qui expliquent la même notion sous un autre angle, avec mes notes et un exercice. Site bilingue EN/FR avec une scène Three.js de formes de construction qui réagissent à la souris.',
       tags:['Three.js','Vite','JavaScript','EN / FR'], bg:'linear-gradient(135deg,#9b4a32,#e9c9a8 55%,#f3ede3)' },
+    { name:'Hook Grabber', type:'projet', status:'Outil perso', year:'2026',
+      host:'localhost · outil perso', img:'/shots/hook-grabber.jpg',
+      desc:'Mon outil pour étudier les hooks TikTok et YouTube : on colle un lien, il télécharge la vidéo, la transcrit au mot près avec Whisper et met en avant les 5 premières secondes. Une checklist tirée de mes règles (voix dès 0 s, changement de langue, rythme des coupes, vues ×3 par rapport au compte), plus une analyse du hook par Claude.',
+      tags:['Python','FastAPI','Whisper','yt-dlp','Claude API'], bg:'linear-gradient(135deg,#141312,#e9ff4a 55%,#ff6b9a)' },
   ],
   emptySlots: 3,   // nombre total de lignes affichées : les cases vides restantes s'affichent en "À venir"
   stack: [
@@ -522,6 +526,7 @@ const CONFIG = {
   ],
   timeline: [
     { when:'En cours', title:'Feedo', at:'· Premier SaaS', text:'Un outil pour collecter et prioriser les retours clients. La landing page est en ligne, le produit est en cours de développement.' },
+    { when:'2026', title:'Hook Grabber', at:'· Outil perso', text:'Un outil local pour analyser les hooks des vidéos courtes : téléchargement, transcription horodatée, checklist de mes règles TikTok et analyse par IA.' },
     { when:'2026', title:'Outil de prospection', at:'· Outil interne', text:'Mon propre outil de cold emailing, codé de zéro : recherche de prospects sur Google Maps, récupération des emails et séquences de relances automatiques.' },
     { when:'2026', title:'Lancement de ce portfolio', at:'· Point de départ', text:'Le jour 1. Ce site est mon premier projet : codé à la main avec Three.js et des shaders GLSL.' },
   ],
