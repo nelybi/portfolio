@@ -84,14 +84,28 @@
   a.card:hover{border-color:var(--line-2);background:var(--card-h);transform:translateY(-2px)}
 
   /* Projet en vedette */
-  .feature{display:grid;grid-template-columns:1fr 1.15fr;overflow:hidden}
-  .feature .txt{padding:24px;display:flex;flex-direction:column}
-  .feature .shot{border-left:1px solid var(--line);background:var(--card-h);overflow:hidden}
-  .feature .shot img{width:100%;height:100%;object-fit:cover;object-position:center}
-  .feature h3{font-size:22px;letter-spacing:-.02em;margin-top:14px}
-  .feature p{color:var(--muted);margin-top:8px}
-  .feature .more{margin-top:auto;padding-top:18px;font-size:14px;font-weight:500;display:inline-flex;gap:6px;align-items:center}
-  @media (max-width:640px){.feature{grid-template-columns:1fr}.feature .shot{border-left:0;border-top:1px solid var(--line);aspect-ratio:16/10}}
+  .feature{display:block;padding:24px}
+  .feature .head{display:flex;align-items:center;gap:12px}
+  .feature .head .logo{width:44px;height:44px;border-radius:11px;font-size:20px}
+  .feature h3{font-size:24px;letter-spacing:-.02em}
+  .feature .head .pill{margin-left:auto}
+  .feature .tagline{font-size:17px;font-weight:500;margin-top:16px;letter-spacing:-.01em}
+  .feature p.desc{color:var(--muted);margin-top:6px;max-width:62ch}
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}
+  .kpis div{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--bg)}
+  .kpis b{display:block;font-size:22px;letter-spacing:-.02em;font-weight:600}
+  .kpis span{font-size:12.5px;color:var(--muted)}
+  .feature .foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:20px}
+  .feature .more{font-size:14px;font-weight:500;display:inline-flex;gap:6px;align-items:center}
+  @media (max-width:520px){.kpis{grid-template-columns:1fr 1fr 1fr;gap:6px}.kpis div{padding:10px}.kpis b{font-size:18px}}
+
+  /* Étapes d'un projet : idée → rentable */
+  .stages{display:flex;gap:4px;margin-top:16px}
+  .stages i{flex:1;height:6px;border-radius:99px;background:var(--line)}
+  .stages i.on{background:var(--accent)}
+  .stages i.cur{background:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+  .stage-l{display:flex;justify-content:space-between;margin-top:7px;font-size:11.5px;color:var(--dim)}
+  .stage-l b{color:var(--text);font-weight:500}
 
   /* Grille de projets */
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -106,10 +120,11 @@
   .proj p{padding:10px 16px 0;color:var(--muted);font-size:14px}
   .proj .tags{padding:10px 16px 0;display:flex;flex-wrap:wrap;gap:6px}
   .tag{font-size:11.5px;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:1px 7px}
-  .proj .thumb{margin:16px 16px 0;border:1px solid var(--line);border-bottom:0;border-radius:9px 9px 0 0;overflow:hidden;aspect-ratio:16/9;background:var(--card-h)}
-  .proj .thumb img{width:100%;height:100%;object-fit:cover;object-position:top center;transition:transform .4s}
-  a.proj:hover .thumb img{transform:scale(1.03)}
-  .proj .host{padding:10px 16px 0;font-size:12px;color:var(--dim)}
+  .proj{padding-bottom:16px}
+  .proj .stages,.proj .stage-l{margin-left:16px;margin-right:16px}
+  .proj .stages{margin-top:auto;padding-top:16px}
+  .proj .tags{margin-bottom:2px}
+  .proj .note{margin:auto 16px 0;padding-top:16px;display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted)}
 
   /* Stack */
   .stack{display:flex;flex-wrap:wrap;gap:8px}
@@ -217,22 +232,25 @@ const CONFIG = {
   web3formsKey: '120c14b8-ef4e-40f5-9832-faaea5a4f08b',
   // Le projet mis en avant tout en haut (nom exact d'un projet ci-dessous)
   featured: 'Scorio',
+  // Les étapes d'un projet (la barre sous chaque carte) ; stage = index de l'étape actuelle
+  stages: ['Idée', 'Construction', 'Lancé', '1ers clients', 'Rentable'],
   /* status : 'live' (en ligne), 'wip' (en construction), 'private' (outil perso/privé) */
   projects: [
-    { name:'Scorio', status:'live', label:'En ligne', url:'https://scorio.eu', host:'scorio.eu', img:'/shots/scorio.jpg',
+    { name:'Scorio', status:'live', label:'En ligne', url:'https://scorio.eu', host:'scorio.eu', stage:2,
+      kpis:[['29 €','par mois'],['14 jours','d\'essai gratuit'],['5 min','pour créer un quiz']],
       tagline:'Des quiz qui transforment tes abonnés en prospects qualifiés',
-      desc:'Mon premier SaaS lancé. Les coachs et formateurs créent en 5 minutes un quiz avec score personnalisé : l\'IA écrit les questions et les résultats, le visiteur découvre où il en est, et le coach récupère son email et ses réponses. 14 jours gratuits, puis abonnement mensuel.',
+      desc:'Mon premier SaaS lancé, pour les coachs et formateurs. L\'IA écrit les questions et les résultats du quiz, le visiteur découvre où il en est, et le coach récupère son email et ses réponses.',
       tags:['Next.js','PostgreSQL','Stripe','Claude API','Resend'], bg:'linear-gradient(135deg,#6d28d9,#db2777 55%,#f97316)' },
-    { name:'Feedo', status:'wip', label:'En construction', url:'https://usefeedo.com', host:'usefeedo.com', img:'/shots/feedo.jpg',
+    { name:'Feedo', status:'wip', label:'En construction', url:'https://usefeedo.com', host:'usefeedo.com', stage:1,
       tagline:'Collecte et priorise les retours de tes clients',
       tags:['Next.js','Tailwind','DaisyUI'], bg:'linear-gradient(135deg,#ff7a59,#ff4fd8 55%,#6a2cff)' },
-    { name:'The Other Angle', status:'live', label:'En ligne', url:'https://the-other-angle.vercel.app', host:'the-other-angle.vercel.app', img:'/shots/the-other-angle.jpg',
+    { name:'The Other Angle', status:'live', label:'En ligne', url:'https://the-other-angle.vercel.app', host:'the-other-angle.vercel.app', note:'Site gratuit, en anglais et en français',
       tagline:'Apprendre le dessin, une notion à la fois, sous un autre angle',
       tags:['Three.js','Vite','EN / FR'], bg:'linear-gradient(135deg,#9b4a32,#e9c9a8)' },
-    { name:'Prospection', status:'private', label:'Outil privé', host:'outil interne', img:'/shots/prospection.jpg',
+    { name:'Prospection', status:'private', label:'Outil privé', host:'outil interne', note:'Utilisé tous les jours pour ma prospection',
       tagline:'Mon Instantly maison : trouve des commerces, écrit, relance et chauffe la boîte tout seul',
       tags:['Node.js','SMTP / IMAP','Google Places API'], bg:'linear-gradient(135deg,#2563eb,#22d3ee)' },
-    { name:'Hook Grabber', status:'private', label:'Outil perso', host:'outil perso', img:'/shots/hook-grabber.jpg',
+    { name:'Hook Grabber', status:'private', label:'Outil perso', host:'outil perso', note:'Utilisé pour préparer mes vidéos',
       tagline:'Décortique les hooks TikTok et YouTube : transcription, checklist et analyse IA',
       tags:['Python','FastAPI','Whisper','Gemini / Claude'], bg:'linear-gradient(135deg,#27272a,#a3e635)' },
   ],
@@ -258,24 +276,25 @@ const logo = (p) => `<span class="logo" style="background:${p.bg}">${esc(p.name[
 const live = P.filter((p) => p.status === 'live').length;
 $('#facts').innerHTML = `<b>${P.length}</b> projets depuis 2026, dont <b>${live}</b> en ligne. 0 employé, 0 investisseur.`;
 
+const stages = (p) => `<div class="stages" aria-label="Étape : ${esc(CONFIG.stages[p.stage])}">${CONFIG.stages.map((_, i) => `<i class="${i < p.stage ? 'on' : i === p.stage ? 'cur' : ''}"></i>`).join('')}</div>
+  <div class="stage-l"><span>Étape : <b>${esc(CONFIG.stages[p.stage])}</b></span><span>${p.stage + 1}/${CONFIG.stages.length}</span></div>`;
+
 const f = P.find((p) => p.name === CONFIG.featured) || P[0];
 $('#feature').innerHTML = `<${tagEl(f)} class="card feature" ${linkAttrs(f)}>
-  <div class="txt">
-    <div style="display:flex;align-items:center;gap:10px">${logo(f)}${pill(f)}</div>
-    <h3>${esc(f.name)}</h3>
-    <p>${esc(f.desc || f.tagline)}</p>
-    <div class="tags" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:14px">${f.tags.map((t) => `<span class="tag">${esc(t)}</span>`).join('')}</div>
-    ${f.url ? `<span class="more">Découvrir ${esc(f.host)} <span aria-hidden="true">→</span></span>` : ''}
-  </div>
-  ${f.img ? `<div class="shot"><img src="${f.img}" alt="Capture de ${esc(f.name)}" loading="lazy" /></div>` : ''}
+  <div class="head">${logo(f)}<h3>${esc(f.name)}</h3>${pill(f)}</div>
+  <div class="tagline">${esc(f.tagline)}</div>
+  <p class="desc">${esc(f.desc || '')}</p>
+  ${f.kpis ? `<div class="kpis">${f.kpis.map(([v, l]) => `<div><b>${esc(v)}</b><span>${esc(l)}</span></div>`).join('')}</div>` : ''}
+  ${f.stage != null ? stages(f) : ''}
+  <div class="foot"><div class="tags" style="display:flex;flex-wrap:wrap;gap:6px">${f.tags.map((t) => `<span class="tag">${esc(t)}</span>`).join('')}</div>
+    ${f.url ? `<span class="more">${esc(f.host)} <span aria-hidden="true">→</span></span>` : ''}</div>
 </${tagEl(f)}>`;
 
 $('#projects').innerHTML = P.filter((p) => p !== f).map((p) => `<${tagEl(p)} class="card proj" ${linkAttrs(p)}>
   <div class="top">${logo(p)}<h3>${esc(p.name)}</h3>${pill(p)}</div>
   <p>${esc(p.tagline)}</p>
   <div class="tags">${p.tags.map((t) => `<span class="tag">${esc(t)}</span>`).join('')}</div>
-  <div class="host">${p.url ? esc(p.host) + ' ↗' : esc(p.host)}</div>
-  ${p.img ? `<div class="thumb"><img src="${p.img}" alt="Capture de ${esc(p.name)}" loading="lazy" /></div>` : ''}
+  ${p.stage != null ? stages(p) : `<div class="note"><span class="dot"></span>${esc(p.note || '')}</div>`}
 </${tagEl(p)}>`).join('');
 
 $('#count').textContent = P.length - 1;
